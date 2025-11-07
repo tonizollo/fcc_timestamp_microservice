@@ -39,7 +39,6 @@ app.get("/", function (req, res) {
 app.get("/api/:date?", function (req, res) {    // "?" makes the date parameter optional
   let unix_int;
   let utc_time;
-  let utc_str;
   let returned_json;
   let valid_input;
   // 7. An empty date parameter should return the current time in a JSON object with a unix key
@@ -48,7 +47,6 @@ app.get("/api/:date?", function (req, res) {    // "?" makes the date parameter 
   if (!req.params.date || req.params.date === '') {
     valid_input = true;
     utc_time = new Date();
-    utc_str = utc_time.toUTCString();
     unix_int = utc_time.getTime();
 
   // Check for millisecond timestamp eg 1451001600000
@@ -56,14 +54,12 @@ app.get("/api/:date?", function (req, res) {    // "?" makes the date parameter 
     valid_input = true;
     unix_int = parseInt(req.params.date);
     utc_time = new Date(unix_int);
-    utc_str = utc_time.toUTCString();
 
   // 5. Your project can handle dates that can be successfully parsed by new Date(date_string)
   // Check for date type eg 2015-12-256
   } else if (isValidDateString(req.params.date)) { 
     valid_input = true;
     utc_time = new Date(req.params.date);
-    utc_str = utc_time.toUTCString();
     unix_int = utc_time.getTime();
 
   // 6. If the input date string is invalid, the API returns an object having the structure { error : "Invalid Date" }
@@ -73,7 +69,7 @@ app.get("/api/:date?", function (req, res) {    // "?" makes the date parameter 
   }
   // Return json object
   if (valid_input) {
-    returned_json = {"unix": unix_int, "utc": utc_str};
+    returned_json = {"unix": unix_int, "utc": utc_time.toUTCString()};
   } else {
     returned_json = { "error": "Invalid Date" }
   }
